@@ -34,11 +34,13 @@ public class Precipitation {
 
     public Precipitation(Random rand){
         this.description = descriptionEnums.get(rand.nextInt(descriptionEnums.size()));
-        this.precipitation = rand.nextInt(100)+1;
+        this.precipitation = rand.nextInt(0, 100);
     }
 
     //Methods
+    @Override
     public String toString(){
-        return "Описание: "+description+"\nОсадки (в мм): "+precipitation;
+
+        return "\tОписание: "+description+"\n\tОсадки, мм: "+precipitation;
     }
 }

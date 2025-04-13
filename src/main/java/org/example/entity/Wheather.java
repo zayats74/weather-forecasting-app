@@ -72,14 +72,31 @@ public class Wheather {
 
     public Wheather(Random rand){
 
-        this.temperature = rand.nextDouble();
-        this.humidity = rand.nextDouble();
-        this.pressure = rand.nextInt();
-        this.uvIndex = rand.nextInt();
-        this.visibility = rand.nextInt();
+        this.temperature = rand.nextDouble(-100, 100);
+        this.humidity = rand.nextDouble(0, 1);
+        this.pressure = rand.nextInt(90, 105);
+        this.uvIndex = rand.nextInt(0, 11);
+        this.visibility = rand.nextInt(0, 45);
         this.description = descriptionEnums.get(rand.nextInt(descriptionEnums.size()));
         this.wind = new Wind(rand);
         this.precipation = new Precipitation(rand);
+    }
+
+    //Methods
+    @Override
+    public String toString() {
+        return String.format(
+                "Фактическая температуа, С: %.1f" +
+                "\nВлажность, %%: %.0f" +
+                "\nДавление, кПа: %d" +
+                "\nУФ индекс: %d" +
+                "\nВидимость, км: %d" +
+                "\nПогодные условия: %s" +
+                "\nВетер:\n%s" +
+                "\nОсадки:\n%s",
+                temperature, humidity * 100,
+                pressure, uvIndex, visibility,
+                description, wind.toString(), precipation.toString());
     }
 
 }

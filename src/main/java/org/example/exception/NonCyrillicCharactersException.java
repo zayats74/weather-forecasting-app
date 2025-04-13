@@ -6,8 +6,4 @@ public class NonCyrillicCharactersException extends RuntimeException {
         super(message);
     }
 
-    @Override
-    public String getMessage() {
-        return "The name of the city must be entered in Cyrillic.";
-    }
 }

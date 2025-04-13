@@ -28,8 +28,8 @@ public class Wind {
         return gusts;
     }
 
-    String[] dirEnums = {"северо-восточный", "юго-западный", "южный", "северный", "восточный", "западный",
-            "северо-западный", "юго-восточный"};
+    String[] dirEnums = {"северо-восток", "юго-запад", "юг", "север", "восток", "запад",
+            "северо-запад", "юго-восток"};
     List<String> directionEnums = new ArrayList<>(Arrays.asList(dirEnums));
 
     //Constructors
@@ -43,14 +43,16 @@ public class Wind {
 
     public Wind(Random rand){
         this.direction = directionEnums.get(rand.nextInt(directionEnums.size()));
-        this.speed = rand.nextDouble()*10+5;
-        this.gusts = rand.nextDouble()*10+5;
+        this.speed = rand.nextDouble(0, 100);
+        this.gusts = rand.nextDouble(0, 100);
     }
 
     //Methods
     //Print characteristics of wind in Console
+    @Override
     public String toString(){
-        return "Направление: "+direction+"\nСкорость: "+speed+"\nПорывы ветра: "+gusts+"\n";
+        return String.format("\tНаправление: %s\n\tСкорость, км/ч: %.1f\n\tПорывы ветра, км/ч: %.1f",
+                direction, speed, gusts);
     }
 
 }
