@@ -1,4 +1,4 @@
-package org.example.exception;
+package org.example.exception.cityException;
 
 public class InvalidCityFormatException extends RuntimeException {
     public InvalidCityFormatException(String message) {

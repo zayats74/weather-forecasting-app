@@ -1,119 +1,100 @@
 package org.example;
 
 
-import org.example.entity.Wheather;
-import org.example.exception.InvalidCityFormatException;
-import org.example.exception.InvalidCityNameException;
-import org.example.exception.NonCyrillicCharactersException;
+import org.example.entity.Weather;
+import org.example.repository.CityRepository;
+import org.example.repository.WeatherRepository;
+import org.example.service.CityService;
+import org.example.service.DateService;
+import org.example.service.Impl.CityServiceImpl;
+import org.example.service.Impl.DateServiceImpl;
+import org.example.service.Impl.WeatherServiceImpl;
+import org.example.service.WeatherService;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
-
 
 
 public class Main {
 
-    public static boolean isCyrillic(String str){
-        return str.matches("[а-яА-Я]+");
-    }
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
+        WeatherRepository weatherRepository = new WeatherRepository();
+        CityRepository cityRepository = new CityRepository();
+        DateService dateService = new DateServiceImpl();
+        WeatherService weatherService = new WeatherServiceImpl(weatherRepository, dateService);
+        CityService cityService = new CityServiceImpl(cityRepository);
 
-        List<String> Allcities = new ArrayList<String>();
-
-        try(BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/java/org/example/file/cities.txt"))  )      {
-            Allcities = reader.lines().toList();
-        }
-        catch(IOException ex){
-
-            System.out.println(ex.getMessage());
-        }
-
-        System.out.println("Привет, пользователь!");
         Scanner scanner = new Scanner(System.in);
 
         String input;
 
-        HashMap<String, HashMap<String, Wheather>> wheatherForecast = new HashMap<>();
-        Map<Integer, String> daysofWeek = Map.of(
-                1, "Понедельник",
-                2, "Вторник",
-                3, "Среда",
-                4, "Четверг",
-                5, "Пятница",
-                6, "Суббота",
-                7, "Воскресенье");
-        Random random = new Random(55);
+
+        System.out.println("Привет, пользователь!");
 
         while (true) {
             System.out.println("Меню действий:");
             System.out.println("1 - Узнать прогноз погоды для определенного города\n" +
                     "2 - Выйти");
-            while (true) {
+            do {
                 System.out.print("Поле ввода: ");
                 input = scanner.nextLine();
-                if (input.matches("[1-2]")) {
-                    break;
-                }
-            }
+            } while (!input.matches("[1-2]"));
+
             if (input.equals("1")) {
-                while(true) {
+                do {
                     System.out.println("Введите название города");
-                    try {
-                        System.out.print("Поле ввода: ");
-                        input = scanner.nextLine();
-                        if (!isCyrillic(input)) {
-                            throw new NonCyrillicCharactersException("Название города должно быть введено кириллицей.");
-                        } else if ('А' > input.charAt(0) || input.charAt(0) > 'Я') {
-                            throw new InvalidCityFormatException("Название города должно начинаться с заглавной буквы");
-                        } else if (!Allcities.contains(input)) {
-                            throw new InvalidCityNameException("Города с таким названием в России не существует.");
-                        }
-                        break;
-                    } catch (NonCyrillicCharactersException | InvalidCityFormatException | InvalidCityNameException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
+                    System.out.print("Поле ввода: ");
+                    input = scanner.nextLine();
+                } while (!cityService.isValidCity(input));
 
-                if (!wheatherForecast.containsKey(input)) {
-                    wheatherForecast.put(input, new HashMap<>());
-                    for (int i = 1; i <= 7; i++){
-                        wheatherForecast.get(input).put(daysofWeek.get(i), new Wheather(random));
-                    }
-                }
-
-                System.out.println("1 - Узнать прогноз погоды на неделю\n" +
-                        "2 - Узнать прогноз погоды в заданный день недели");
+                System.out.println("1 - Узнать прогноз погоды на следующие 10 дней\n" +
+                        "2 - Узнать прогноз погоды в заданную дату\n" +
+                        "3 - Узнать прогноз погоды на сегодня\n" +
+                        "4 - Узнать прогноз погоды на завтра");
                 System.out.print("Поле ввода: ");
                 String choice = scanner.nextLine();
-                if(choice.equals("1")) {
-                    for (int i = 1; i <= 7; i++){
-                        System.out.println("\n" + daysofWeek.get(i));
-                        System.out.println(wheatherForecast.get(input).get(daysofWeek.get(i)).toString());
-                    }
-                }
-                else {
-                    System.out.println("Укажите день недели, в который вы бы хотели узнать прогноз погоды:\n" +
-                                           "1 - Понедельник\n" +
-                                           "2 - Вторник\n" +
-                                           "3 - Среда\n" +
-                                           "4 - Четверг\n" +
-                                           "5 - Пятница\n" +
-                                           "6 - Суббота\n" +
-                                           "7 - Воскресенье\n");
-                    while (true) {
-                        System.out.print("Поле ввода: ");
-                        String dayOfWeek = scanner.nextLine();
-                        if (dayOfWeek == null || !dayOfWeek.matches("[1-7]")) {
-                            continue;
+                switch (choice) {
+                    case "1" -> {
+                        HashMap<LocalDate, Weather> wf = weatherService.getWeatherForecastOnTenDays(input);
+                        for (LocalDate date: wf.keySet().stream().sorted().toList()) {
+                            System.out.println("\n" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                                    + " (" + dateService.getDayOfWeek(date) + ")");
+                            System.out.println(wf.get(date).toString());
                         }
-                        System.out.println(daysofWeek.get(Integer.parseInt(dayOfWeek)));
-                        System.out.println(wheatherForecast.get(input).get(daysofWeek.get(Integer.parseInt(dayOfWeek))).toString());
-                        break;
+                    }
+                    case "2" -> {
+                        System.out.println("Укажите дату, в которую вы хотели бы узнать прогноз погоды\n" +
+                                "Формат ввода: ДД.ММ.ГГГГ\n");
+                        String date;
+                        while (true) {
+                            System.out.print("Поле ввода: ");
+                            date = scanner.nextLine();
+                            if (date == null || !dateService.isValidDate(date)) {
+                                continue;
+                            }
+                            break;
+                        }
+                        LocalDate d = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                        System.out.println("\n" + d.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                                + " (" + dateService.getDayOfWeek(d) + ")");
+                        System.out.println(weatherService.getWeatherForecastOnSetDay(input, d).toString());
+
+
+                    }
+                    case "3" -> {
+                        LocalDate date = dateService.getCurrentDate();
+                        System.out.println("\n" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                                + " (" + dateService.getDayOfWeek(dateService.getCurrentDate()) + ")");
+                        System.out.println(weatherService.getWeatherForecastOnToday(input).toString());
+                    }
+                    default -> {
+                        LocalDate date = dateService.getTomorrowDate();
+                        System.out.println("\n" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                                + " (" + dateService.getDayOfWeek(dateService.getTomorrowDate()) + ")");
+                        System.out.println(weatherService.getWeatherForecastOnTomorrow(input).toString());
                     }
                 }
             }

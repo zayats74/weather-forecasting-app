@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class Wheather {
+public class Weather {
 
     //actual temperature
     private double temperature;
@@ -68,9 +68,9 @@ public class Wheather {
 
 
     //Constructors
-    public Wheather(){}
+    public Weather(){}
 
-    public Wheather(Random rand){
+    public Weather(Random rand){
 
         this.temperature = rand.nextDouble(-100, 100);
         this.humidity = rand.nextDouble(0, 1);
