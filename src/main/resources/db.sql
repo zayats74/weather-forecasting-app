@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS cities(
+    id SERIAL,
+    city VARCHAR(255) NOT NULL,
+    CONSTRAINT cities_pk PRIMARY KEY (id)
+);

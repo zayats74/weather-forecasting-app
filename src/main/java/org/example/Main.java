@@ -11,7 +11,7 @@ import org.example.service.Impl.DateServiceImpl;
 import org.example.service.Impl.WeatherServiceImpl;
 import org.example.service.WeatherService;
 
-import java.io.IOException;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -19,10 +19,14 @@ import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
+
+        String jdbcUrl = "jdbc:postgresql://localhost:5432/postgres";
+        String username = "postgres";
+        String password = "postgres";
 
         WeatherRepository weatherRepository = new WeatherRepository();
-        CityRepository cityRepository = new CityRepository();
+        CityRepository cityRepository = new CityRepository(jdbcUrl, username, password);
         DateService dateService = new DateServiceImpl();
         WeatherService weatherService = new WeatherServiceImpl(weatherRepository, dateService);
         CityService cityService = new CityServiceImpl(cityRepository);
