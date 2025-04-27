@@ -58,17 +58,30 @@ public class Weather {
         return description;
     }
 
-    public String getWind() {
-        return wind.toString();
+    public Wind getWind() {
+        return wind;
     }
 
-    public String getPrecipation() {
-        return precipation.toString();
+    public Precipitation getPrecipation() {
+        return precipation;
     }
 
 
     //Constructors
     public Weather(){}
+
+    public Weather(double temperature, double humidity, int pressure, int uvIndex,
+                   int visibility, String description, Wind wind,
+                   Precipitation precipation) {
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.pressure = pressure;
+        this.uvIndex = uvIndex;
+        this.visibility = visibility;
+        this.description = description;
+        this.wind = wind;
+        this.precipation = precipation;
+    }
 
     public Weather(Random rand){
 
