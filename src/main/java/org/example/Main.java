@@ -24,6 +24,7 @@ public class Main {
         String username = "postgres";
         String password = "postgres";
 
+
         WeatherRepository weatherRepository = new WeatherRepository(jdbcUrl, username, password);
         CityRepository cityRepository = new CityRepository(jdbcUrl, username, password);
         WeatherService weatherService = new WeatherServiceImpl(weatherRepository);
