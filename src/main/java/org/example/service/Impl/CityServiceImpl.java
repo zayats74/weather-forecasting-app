@@ -26,7 +26,7 @@ public class CityServiceImpl implements CityService {
                 throw new NonCyrillicCharactersException("Название города должно быть введено кириллицей.");
             } else if ('А' > city.charAt(0) || city.charAt(0) > 'Я') {
                 throw new InvalidCityFormatException("Название города должно начинаться с заглавной буквы");
-            } else if (!cityRepository.getAllcities().contains(city)) {
+            } else if (!cityRepository.getAllCities().contains(city)) {
                 throw new InvalidCityNameException("Города с таким названием в России не существует.");
             }
         }

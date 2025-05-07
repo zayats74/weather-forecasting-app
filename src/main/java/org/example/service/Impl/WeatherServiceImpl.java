@@ -2,8 +2,8 @@ package org.example.service.Impl;
 
 import org.example.entity.Weather;
 import org.example.repository.WeatherRepository;
-import org.example.service.DateService;
 import org.example.service.WeatherService;
+import org.example.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -12,13 +12,11 @@ import java.util.Random;
 public class WeatherServiceImpl implements WeatherService {
 
     private final WeatherRepository weatherRepository;
-    private final DateService dateService;
 
     Random random = new Random(55);
 
-    public WeatherServiceImpl(WeatherRepository weatherRepository, DateService dateService) {
+    public WeatherServiceImpl(WeatherRepository weatherRepository) {
         this.weatherRepository = weatherRepository;
-        this.dateService = dateService;
     }
 
     public Weather getWeatherForecast(Random rand) {
@@ -27,14 +25,14 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public Weather getWeatherForecastOnToday(String city) {
-        LocalDate date = dateService.getCurrentDate();
+        LocalDate date = DateUtils.getCurrentDate();
         weatherRepository.addWeatherForecast(city, date, this.getWeatherForecast(random));
         return weatherRepository.getWeatherForecast(city, date);
     }
 
     @Override
     public Weather getWeatherForecastOnTomorrow(String city) {
-        LocalDate date = dateService.getTomorrowDate();
+        LocalDate date = DateUtils.getTomorrowDate();
         weatherRepository.addWeatherForecast(city, date, this.getWeatherForecast(random));
         return weatherRepository.getWeatherForecast(city, date);
     }

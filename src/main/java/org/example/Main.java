@@ -5,13 +5,12 @@ import org.example.entity.Weather;
 import org.example.repository.CityRepository;
 import org.example.repository.WeatherRepository;
 import org.example.service.CityService;
-import org.example.service.DateService;
 import org.example.service.Impl.CityServiceImpl;
-import org.example.service.Impl.DateServiceImpl;
 import org.example.service.Impl.WeatherServiceImpl;
 import org.example.service.WeatherService;
+import org.example.utils.DateUtils;
 
-import java.io.IOException;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -19,12 +18,16 @@ import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
 
-        WeatherRepository weatherRepository = new WeatherRepository();
-        CityRepository cityRepository = new CityRepository();
-        DateService dateService = new DateServiceImpl();
-        WeatherService weatherService = new WeatherServiceImpl(weatherRepository, dateService);
+        String jdbcUrl = "jdbc:postgresql://localhost:5432/postgres";
+        String username = "postgres";
+        String password = "postgres";
+
+
+        WeatherRepository weatherRepository = new WeatherRepository(jdbcUrl, username, password);
+        CityRepository cityRepository = new CityRepository(jdbcUrl, username, password);
+        WeatherService weatherService = new WeatherServiceImpl(weatherRepository);
         CityService cityService = new CityServiceImpl(cityRepository);
 
         Scanner scanner = new Scanner(System.in);
@@ -61,7 +64,7 @@ public class Main {
                         HashMap<LocalDate, Weather> wf = weatherService.getWeatherForecastOnTenDays(input);
                         for (LocalDate date: wf.keySet().stream().sorted().toList()) {
                             System.out.println("\n" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                                    + " (" + dateService.getDayOfWeek(date) + ")");
+                                    + " (" + DateUtils.getDayOfWeek(date) + ")");
                             System.out.println(wf.get(date).toString());
                         }
                     }
@@ -72,28 +75,28 @@ public class Main {
                         while (true) {
                             System.out.print("Поле ввода: ");
                             date = scanner.nextLine();
-                            if (date == null || !dateService.isValidDate(date)) {
+                            if (date == null || !DateUtils.isValidDate(date)) {
                                 continue;
                             }
                             break;
                         }
                         LocalDate d = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                         System.out.println("\n" + d.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                                + " (" + dateService.getDayOfWeek(d) + ")");
+                                + " (" + DateUtils.getDayOfWeek(d) + ")");
                         System.out.println(weatherService.getWeatherForecastOnSetDay(input, d).toString());
 
 
                     }
                     case "3" -> {
-                        LocalDate date = dateService.getCurrentDate();
+                        LocalDate date = DateUtils.getCurrentDate();
                         System.out.println("\n" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                                + " (" + dateService.getDayOfWeek(dateService.getCurrentDate()) + ")");
+                                + " (" + DateUtils.getDayOfWeek(DateUtils.getCurrentDate()) + ")");
                         System.out.println(weatherService.getWeatherForecastOnToday(input).toString());
                     }
                     default -> {
-                        LocalDate date = dateService.getTomorrowDate();
+                        LocalDate date = DateUtils.getTomorrowDate();
                         System.out.println("\n" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                                + " (" + dateService.getDayOfWeek(dateService.getTomorrowDate()) + ")");
+                                + " (" + DateUtils.getDayOfWeek(DateUtils.getTomorrowDate()) + ")");
                         System.out.println(weatherService.getWeatherForecastOnTomorrow(input).toString());
                     }
                 }

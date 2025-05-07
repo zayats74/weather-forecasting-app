@@ -1,28 +1,33 @@
 package org.example.repository;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CityRepository {
-    List<String> Allcities = new ArrayList<>();
 
-    public CityRepository() throws IOException {
-        try(
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/java/org/example/file/cities.txt"))  )      {
-            Allcities = reader.lines().toList();
-        }
-        catch(
-                IOException ex){
+    private final String jdbcUrl;
+    private final String username;
+    private final String password;
 
-            System.out.println(ex.getMessage());
-        }
+    public CityRepository(String jdbcUrl, String username, String password) {
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
     }
 
-    public List<String> getAllcities() {
-        return Allcities;
+    public List<String> getAllCities(){
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)){
+            Statement statement = connection.createStatement();
+            ResultSet allCities = statement.executeQuery("SELECT city FROM cities");
+            List<String> cities = new ArrayList<>();
+            while(allCities.next()) {
+                cities.add(allCities.getString(1));
+            }
+            return cities;
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
