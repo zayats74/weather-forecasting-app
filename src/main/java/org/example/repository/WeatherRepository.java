@@ -3,6 +3,8 @@ package org.example.repository;
 import org.example.entity.Precipitation;
 import org.example.entity.Weather;
 import org.example.entity.Wind;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.Instant;
@@ -10,12 +12,17 @@ import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+@Repository
 public class WeatherRepository {
 
-    private final String jdbcUrl;
-    private final String username;
-    private final String password;
+    @Value("${spring.datasource.url}")
+    private String jdbcUrl;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
 
     //Queries
     private static final String READ_WIND_DESC_QUERY = "select id from wind_description where name = ?";
@@ -48,12 +55,6 @@ public class WeatherRepository {
 
     public static final String UPDATE_COUNTER_SCHEDULE_QUERY = "update schedule set count = count + 1, updated_at = NOW() where id = ?";
 
-
-    public WeatherRepository(String jdbcUrl, String username, String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-    }
 
     public void addWeatherForecast(String city, LocalDate date, Weather weather){
        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)){

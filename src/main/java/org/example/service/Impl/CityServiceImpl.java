@@ -5,7 +5,9 @@ import org.example.exception.cityException.InvalidCityNameException;
 import org.example.exception.cityException.NonCyrillicCharactersException;
 import org.example.repository.CityRepository;
 import org.example.service.CityService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;

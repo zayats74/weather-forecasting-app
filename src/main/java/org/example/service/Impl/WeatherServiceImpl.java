@@ -4,11 +4,13 @@ import org.example.entity.Weather;
 import org.example.repository.WeatherRepository;
 import org.example.service.WeatherService;
 import org.example.utils.DateUtils;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Random;
 
+@Service
 public class WeatherServiceImpl implements WeatherService {
 
     private final WeatherRepository weatherRepository;

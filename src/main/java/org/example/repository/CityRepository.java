@@ -1,20 +1,24 @@
 package org.example.repository;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class CityRepository {
 
-    private final String jdbcUrl;
-    private final String username;
-    private final String password;
+    @Value("${spring.datasource.url}")
+    private String jdbcUrl;
 
-    public CityRepository(String jdbcUrl, String username, String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-    }
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
 
     public List<String> getAllCities(){
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)){
