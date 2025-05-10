@@ -4,6 +4,11 @@ public class City {
 
     private String city;
 
+    //Getters
+    public String getCity() {
+        return city;
+    }
+
     //Constructors
     public City() {}
 

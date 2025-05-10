@@ -19,12 +19,12 @@ import java.util.logging.Logger;
 @Repository
 public class WeatherRepository {
 
-    private  final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Wind> windRowMapper = ((rs, rowNum) -> new Wind(
             rs.getString("wind_direction"),
-            rs.getDouble("speed"),
-            rs.getDouble("gusts")
+            rs.getDouble("wind_speed"),
+            rs.getDouble("wind_gusts")
     ));
 
     private final RowMapper<Precipitation> precipitationRowMapper = ((rs, rowNum) -> new Precipitation(
@@ -47,30 +47,30 @@ public class WeatherRepository {
     //Queries
     private static final String READ_WIND_DESC_QUERY = "select id from wind_description where name = ?";
     private static final String READ_WEATHER_DESC_QUERY = "select id from weather_description where name = ?";
-    public static final  String READ_PRECIPITATION_DESC_QUERY = "select id from precipitation_description where name = ?";
+    public static final String READ_PRECIPITATION_DESC_QUERY = "select id from precipitation_description where name = ?";
     public static final String READ_SCHEDULE_QUERY = "select id from schedule where date = ? and city_id = (select id from cities where city = ?)";
     public static final String READ_CITY_QUERY = "select id from cities where city = ?";
     public static final String READ_WEATHER_FORECASTING_QUERY = """
-                    SELECT w.temperature, w.humidity, w.pressure, w.uv_index, w.visability,
-                            wd.name as weather_description,
-                            wi.speed as wind_speed, wi.gusts as wind_gusts,
-                            wid.name as wind_direction,
-                            p.precipitation, pd.name as precipitation_description
-                    FROM schedule s
-                    INNER JOIN cities c ON s.city_id = c.id
-                    INNER JOIN weather w ON w.id_schedule = s.id
-                    INNER JOIN weather_description wd ON wd.id = w.id_weather_desc
-                    INNER JOIN precipitations p ON p.id_schedule = s.id
-                    INNER JOIN precipitation_description pd ON pd.id = p.id_prec_desc
-                    INNER JOIN wind wi ON wi.id_schedule = s.id
-                    INNER JOIN wind_description wid ON wid.id = wi.id_wind_desc
-                    WHERE city = ? AND date = ?;
-                    """;
+            SELECT w.temperature, w.humidity, w.pressure, w.uv_index, w.visability,
+                    wd.name as weather_description,
+                    wi.speed as wind_speed, wi.gusts as wind_gusts,
+                    wid.name as wind_direction,
+                    p.precipitation, pd.name as precipitation_description
+            FROM schedule s
+            INNER JOIN cities c ON s.city_id = c.id
+            INNER JOIN weather w ON w.id_schedule = s.id
+            INNER JOIN weather_description wd ON wd.id = w.id_weather_desc
+            INNER JOIN precipitations p ON p.id_schedule = s.id
+            INNER JOIN precipitation_description pd ON pd.id = p.id_prec_desc
+            INNER JOIN wind wi ON wi.id_schedule = s.id
+            INNER JOIN wind_description wid ON wid.id = wi.id_wind_desc
+            WHERE city = ? AND date = ?;
+            """;
 
     public static final String INSERT_WIND_QUERY = "insert into wind (id_schedule, speed, gusts, id_wind_desc) values (?, ?, ?, ?)";
     public static final String INSERT_PRECIPITATION_QUERY = "insert into precipitations (id_schedule, precipitation, id_prec_desc) values (?, ?, ?)";
     public static final String INSERT_WEATHER_QUERY = "insert into weather (id_schedule, temperature, humidity, pressure, uv_index, visability, id_weather_desc) " +
-                                                        "values (?, ?, ?, ?, ?, ?, ?)";
+            "values (?, ?, ?, ?, ?, ?, ?)";
     public static final String INSERT_SCHEDULE_QUERY = "insert into schedule (city_id, date, created_at) values (?, ?, ?) returning id";
 
     public static final String UPDATE_COUNTER_SCHEDULE_QUERY = "update schedule set count = count + 1, updated_at = NOW() where id = ?";
@@ -85,73 +85,69 @@ public class WeatherRepository {
     }
 
     @Transactional
-    public void addWeatherForecast(String city, LocalDate date, Weather weather){
+    public void addWeatherForecast(String city, LocalDate date, Weather weather) {
         try {
-               Integer cityId = jdbcTemplate.queryForObject(READ_CITY_QUERY,
-                       (rs, rowNum) -> rs.getInt("id"),
-                       city);
+            Integer cityId = jdbcTemplate.queryForObject(READ_CITY_QUERY,
+                    Integer.class,
+                    city);
 
-               if(city == null){
-                   throw new SQLException("City not found");
-               }
+            if (cityId == null) {
+                throw new SQLException("City not found");
+            }
 
-               Integer scheduleId = jdbcTemplate.queryForObject(READ_SCHEDULE_QUERY,
-                       (rs, rowNum) -> rs.getInt("id"),
-                       Date.valueOf(date), city);
+            Integer scheduleId;
+            try {
+                scheduleId = jdbcTemplate.queryForObject(READ_SCHEDULE_QUERY,
+                        Integer.class,
+                        Date.valueOf(date), city);
+                jdbcTemplate.update(UPDATE_COUNTER_SCHEDULE_QUERY, scheduleId);
+            } catch (EmptyResultDataAccessException e) {
+                scheduleId = jdbcTemplate.queryForObject(INSERT_SCHEDULE_QUERY,
+                        Integer.class,
+                        cityId,
+                        Date.valueOf(date),
+                        Timestamp.from(Instant.now()));
 
-               if (scheduleId != null) {
-                   jdbcTemplate.update(UPDATE_COUNTER_SCHEDULE_QUERY, scheduleId);
-               }
-               else{
-                   //schedule
-                   scheduleId = jdbcTemplate.queryForObject(INSERT_SCHEDULE_QUERY,
-                           (rs, rowNum) -> rs.getInt("id"),
-                           cityId,
-                           Date.valueOf(date),
-                           Timestamp.from(Instant.now()));
+                //wind
+                Integer windDescId = getDescription(READ_WIND_DESC_QUERY, weather.getWind().getDirection());
+                jdbcTemplate.update(INSERT_WIND_QUERY,
+                        scheduleId,
+                        weather.getWind().getSpeed(),
+                        weather.getWind().getGusts(),
+                        windDescId);
 
-                   //wind
-                   Integer windDescId  = getDescription(READ_WIND_DESC_QUERY, weather.getWind().getDirection());
-                   jdbcTemplate.update(INSERT_WIND_QUERY,
-                           scheduleId,
-                           weather.getWind().getSpeed(),
-                           weather.getWind().getGusts(),
-                           windDescId);
+                //precipitation
+                Integer precipitationDescId = getDescription(READ_PRECIPITATION_DESC_QUERY, weather.getPrecipation().getDescription());
+                jdbcTemplate.update(INSERT_PRECIPITATION_QUERY,
+                        scheduleId,
+                        weather.getPrecipation().getPrecipitation(),
+                        precipitationDescId);
 
-                   //precipitation
-                   Integer precipitationDescId = getDescription(READ_PRECIPITATION_DESC_QUERY, weather.getPrecipation().getDescription());
-                   jdbcTemplate.update(INSERT_PRECIPITATION_QUERY,
-                           scheduleId,
-                           weather.getPrecipation().getPrecipitation(),
-                           precipitationDescId);
-
-                   //weather
-                   Integer weatherDescId = getDescription(READ_WEATHER_DESC_QUERY, weather.getDescription());
-                   jdbcTemplate.update(INSERT_WEATHER_QUERY,
-                           scheduleId,
-                           weather.getTemperature(),
-                           weather.getHumidity(),
-                           weather.getPressure(),
-                           weather.getUvIndex(),
-                           weather.getVisibility(),
-                           weatherDescId);
-               }
-           }
-           catch (DataAccessException | SQLException e) {
-               Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, e);
-               throw new RuntimeException("Failed to add weather forecast to database");
-           }
+                //weather
+                Integer weatherDescId = getDescription(READ_WEATHER_DESC_QUERY, weather.getDescription());
+                jdbcTemplate.update(INSERT_WEATHER_QUERY,
+                        scheduleId,
+                        weather.getTemperature(),
+                        weather.getHumidity(),
+                        weather.getPressure(),
+                        weather.getUvIndex(),
+                        weather.getVisibility(),
+                        weatherDescId);
+            }
+        } catch (DataAccessException | SQLException e) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, e);
+            throw new RuntimeException("Failed to add weather forecast to database");
+        }
     }
 
-    public Weather getWeatherForecast(String city, LocalDate date){
+    public Weather getWeatherForecast(String city, LocalDate date) {
         try {
-                return jdbcTemplate.queryForObject(READ_WEATHER_FORECASTING_QUERY,
-                        weatherRowMapper, city, Date.valueOf(date));
-            }
-            catch (EmptyResultDataAccessException e) {
-                Logger.getLogger(WeatherRepository.class.getName()).log(Level.SEVERE, null, e);
-                throw new RuntimeException("Failed to get data about weather from database");
-            }
+            return jdbcTemplate.queryForObject(READ_WEATHER_FORECASTING_QUERY,
+                    weatherRowMapper, city, Date.valueOf(date));
+        } catch (EmptyResultDataAccessException e) {
+            Logger.getLogger(WeatherRepository.class.getName()).log(Level.SEVERE, null, e);
+            throw new RuntimeException("Failed to get data about weather from database");
+        }
     }
 
 
