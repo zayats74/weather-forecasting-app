@@ -1,33 +1,42 @@
 package org.example.repository;
 
-import java.sql.*;
-import java.util.ArrayList;
+import org.example.entity.City;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+
 import java.util.List;
 
+@Repository
 public class CityRepository {
 
-    private final String jdbcUrl;
-    private final String username;
-    private final String password;
+    private final JdbcTemplate jdbcTemplate;
 
-    public CityRepository(String jdbcUrl, String username, String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
+    private final RowMapper<City> cityRowMapper = (rs, rowNum) -> new City(
+            rs.getString("city")
+    );
+
+    public static final String READ_CITIES_QUERY = "SELECT city FROM cities";
+    public static final String READ_CITY_QUERY = "SELECT id FROM cities WHERE city = ?";
+
+    public CityRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<String> getAllCities(){
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)){
-            Statement statement = connection.createStatement();
-            ResultSet allCities = statement.executeQuery("SELECT city FROM cities");
-            List<String> cities = new ArrayList<>();
-            while(allCities.next()) {
-                cities.add(allCities.getString(1));
-            }
-            return cities;
+
+    public List<City> getAllCities(){
+        return jdbcTemplate.query(READ_CITIES_QUERY, cityRowMapper);
+    }
+
+    public boolean containsCity(String city){
+        try {
+            return jdbcTemplate.queryForObject(READ_CITY_QUERY, Integer.class, city) != null;
         }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
+        catch (EmptyResultDataAccessException e){
+            return false;
         }
     }
+
 }

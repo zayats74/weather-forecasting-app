@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+
+weather-forecast:
+    baseUrl: https://projecteol.ru
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2ODg3MTY3LCJpYXQiOjE3NDY4ODY4NjcsImp0aSI6IjVmNmVjN2JkN2Y3MDRjMzRiZWQ2MmJjYWExOWNlMjRiIiwidXNlcl9pZCI6ODYyfQ.mLNoCP08UCZ-E5gM6hayl5EzqIOsO8xKaBj_yB_QyR4
+
+city-coordinates:
+    baseUrl: https://geocode-maps.yandex.ru
+    api-key: 46352c14-361b-4a45-99f7-c34e5d78f90d
