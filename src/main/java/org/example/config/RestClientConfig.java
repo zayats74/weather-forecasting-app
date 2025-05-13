@@ -7,16 +7,20 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class RestClientConfig {
 
-    private final AppProperties appProperties;
+    private final CityCoordinatesProperties cityCoordinatesProperties;
 
-    public RestClientConfig(AppProperties appProperties) {
-        this.appProperties = appProperties;
+    private final WeatherForecastProperties weatherForecastProperties;
+
+    public RestClientConfig(CityCoordinatesProperties cityCoordinatesProperties, WeatherForecastProperties weatherForecastProperties) {
+        this.cityCoordinatesProperties = cityCoordinatesProperties;
+        this.weatherForecastProperties = weatherForecastProperties;
     }
+
 
     @Bean
     public RestClient сityClient() {
         return RestClient.builder()
-                .baseUrl(appProperties.getCityBaseUrl())
+                .baseUrl(cityCoordinatesProperties.getBaseUrl())
                 .defaultHeader("accept", "application/json")
                 .build();
     }
@@ -24,7 +28,7 @@ public class RestClientConfig {
     @Bean
     public RestClient weatherClient() {
         return RestClient.builder()
-                .baseUrl(appProperties.getWeatherBaseUrl())
+                .baseUrl(weatherForecastProperties.getBaseUrl())
                 .build();
     }
 }

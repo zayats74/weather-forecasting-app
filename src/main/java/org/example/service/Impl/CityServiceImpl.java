@@ -1,6 +1,6 @@
 package org.example.service.Impl;
 
-import org.example.config.AppProperties;
+import org.example.config.CityCoordinatesProperties;
 import org.example.dto.CityResponseDTO;
 import org.example.exception.cityException.InvalidCityFormatException;
 import org.example.exception.cityException.InvalidCityNameException;
@@ -17,12 +17,12 @@ public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;
     private final RestClient restClient;
-    private final AppProperties appProperties;
+    private final CityCoordinatesProperties cityCoordinatesProperties;
 
-    public CityServiceImpl(CityRepository cityRepository, @Qualifier("сityClient") RestClient restClient, AppProperties appProperties) {
+    public CityServiceImpl(CityRepository cityRepository, @Qualifier("сityClient") RestClient restClient, CityCoordinatesProperties cityCoordinatesProperties) {
         this.cityRepository = cityRepository;
         this.restClient = restClient;
-        this.appProperties = appProperties;
+        this.cityCoordinatesProperties = cityCoordinatesProperties;
     }
 
     private boolean isCyrillic(String str){
@@ -44,7 +44,7 @@ public class CityServiceImpl implements CityService {
     public String getCityCoordinates(String city) {
         CityResponseDTO response = restClient
                 .get()
-                .uri("/v1?apikey={apikey}&geocode={city}&format=json", appProperties.getCityApiKey(), city)
+                .uri("/v1?apikey={apikey}&geocode={city}&format=json", cityCoordinatesProperties.getApiKey(), city)
                 .retrieve()
                 .body(CityResponseDTO.class);
         double[] coordinates = response.getCoordinates();

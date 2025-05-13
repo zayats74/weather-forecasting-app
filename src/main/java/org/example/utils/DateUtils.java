@@ -8,6 +8,10 @@ import java.util.Locale;
 
 public final class DateUtils {
 
+    //Patterns
+    public static final String DATE_FORMAT = "\\d+\\.\\d+\\.\\d+";
+    public static final String DATE_VALIDATION = ".*\\p{L}.*";
+
     private DateUtils() {
     }
 
@@ -53,9 +57,9 @@ public final class DateUtils {
 
     public static boolean isValidDate(String date) {
         int year, month;
-        if (date.matches(".*\\p{L}.*")) {
+        if (date.matches(DATE_VALIDATION)) {
             throw new NonNumericDateException("В дате не могут содержаться любые буквы");
-        } else if (!date.matches("\\d+\\.\\d+\\.\\d+")) {
+        } else if (!date.matches(DATE_FORMAT)) {
             throw new InvalidDateFormatException("Неверный формат ввода даты\n" +
                     "Формат: ДД.ММ.ГГГГ");
         } else if (!isValidYear(year = Integer.parseInt(date.substring(6, 10)))) {
