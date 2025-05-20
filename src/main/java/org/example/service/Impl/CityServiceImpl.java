@@ -26,7 +26,7 @@ public class CityServiceImpl implements CityService {
     }
 
     private boolean isCyrillic(String str){
-        return str.matches("[а-яА-Я]+");
+        return str.matches("^[А-Яа-яЁё]+(?:[-\\s][А-Яа-яЁё]+)*$");
     }
 
     @Override
