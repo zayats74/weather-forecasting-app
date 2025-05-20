@@ -1,58 +1,34 @@
 package org.example.entity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.*;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@Table(name = "wind")
 public class Wind {
 
-    private String direction;
+    @Id
+    @Column(name = "id_schedule")
+    private Long scheduleId;
 
     //in km/h
     private double speed;
 
-    //in km/s
-    private double gusts;
 
-    //Getters
-    public String getDirection() {
-        return direction;
-    }
+    @OneToOne
+    @JoinColumn(name = "id_schedule")
+    @MapsId
+    private Schedule schedule;
 
-    public double getSpeed() {
-        return speed;
-    }
-
-    public double getGusts() {
-        return gusts;
-    }
-
-    String[] dirEnums = {"северо-восток", "юго-запад", "юг", "север", "восток", "запад",
-            "северо-запад", "юго-восток"};
-    List<String> directionEnums = new ArrayList<>(Arrays.asList(dirEnums));
-
-    //Constructors
-    public Wind(){}
-
-    public Wind(String direction, double speed, double gusts) {
-        this.direction = direction;
-        this.speed = speed;
-        this.gusts = gusts;
-    }
-
-    public Wind(Random rand){
-        this.direction = directionEnums.get(rand.nextInt(directionEnums.size()));
-        this.speed = rand.nextDouble(0, 100);
-        this.gusts = rand.nextDouble(0, 100);
-    }
-
-    //Methods
-    //Print characteristics of wind in Console
-    @Override
-    public String toString(){
-        return String.format("\tНаправление: %s\n\tСкорость, км/ч: %.1f\n\tПорывы ветра, км/ч: %.1f",
-                direction, speed, gusts);
-    }
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_wind_desc")
+    private WindDescription windDescription;
 
 }

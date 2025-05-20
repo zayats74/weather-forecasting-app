@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/weather-forecast")
@@ -27,19 +27,19 @@ public class WeatherController {
     }
 
     @GetMapping("/{city}/today")
-    public WeatherResponseDTO getWeatherOnToday(@PathVariable String city) {
+    public List<WeatherResponseDTO> getWeatherOnToday(@PathVariable String city) {
         cityService.isValidCity(city);
         return weatherService.getWeatherForecastOnToday(city);
     }
 
     @GetMapping("/{city}/tomorrow")
-    public WeatherResponseDTO getWeatherOnTomorrow(@PathVariable String city) {
+    public List<WeatherResponseDTO> getWeatherOnTomorrow(@PathVariable String city) {
         cityService.isValidCity(city);
         return weatherService.getWeatherForecastOnTomorrow(city);
     }
 
     @GetMapping("/{city}/{date}")
-    public WeatherResponseDTO getWeatherOnDate(@PathVariable String city,
+    public List<WeatherResponseDTO> getWeatherOnDate(@PathVariable String city,
                                                @PathVariable String date) {
         cityService.isValidCity(city);
         DateUtils.isValidDate(date);
@@ -48,7 +48,7 @@ public class WeatherController {
     }
 
     @GetMapping("/{city}")
-    public HashMap<LocalDate, WeatherResponseDTO> getWeatherForecast(@PathVariable String city) {
+    public List<WeatherResponseDTO> getWeatherForecast(@PathVariable String city) {
         cityService.isValidCity(city);
         return weatherService.getWeatherForecastOnTenDays(city);
     }

@@ -1,16 +1,15 @@
 package org.example.service;
 
 import org.example.dto.WeatherResponseDTO;
-import org.example.entity.Weather;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
 public interface WeatherService {
-    WeatherResponseDTO getWeatherForecast(Random rand);
-    WeatherResponseDTO getWeatherForecastOnToday(String city);
-    WeatherResponseDTO getWeatherForecastOnTomorrow(String city);
-    HashMap<LocalDate, WeatherResponseDTO> getWeatherForecastOnTenDays(String city);
-    WeatherResponseDTO getWeatherForecastOnSetDay(String city, LocalDate date);
+    List<WeatherResponseDTO> getWeatherForecastOnAllHours(String city, LocalDate date);
+    List<WeatherResponseDTO> getWeatherForecastOnDates(String city, LocalDate dateStart, LocalDate dateEnd);
+    List<WeatherResponseDTO> getWeatherForecastOnToday(String city);
+    List<WeatherResponseDTO> getWeatherForecastOnTomorrow(String city);
+    List<WeatherResponseDTO> getWeatherForecastOnTenDays(String city);
+    List<WeatherResponseDTO> getWeatherForecastOnSetDay(String city, LocalDate date);
 }
