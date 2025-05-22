@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS weather(
     humidity DOUBLE PRECISION,
     pressure INT,
     uv_index INT,
-    visability INT,
-    id_weather_desc SERIAL,
+    visibility INT,
+    id_weather_desc INT,
     CONSTRAINT fk_id_weather_desc FOREIGN KEY (id_weather_desc) REFERENCES weather_description(id)
 );

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 
+
 @Configuration
 public class RestClientConfig {
 
@@ -18,16 +19,16 @@ public class RestClientConfig {
 
 
     @Bean
-    public RestClient сityClient() {
-        return RestClient.builder()
+    public RestClient сityClient(RestClient.Builder builder) {
+        return builder
                 .baseUrl(cityCoordinatesProperties.getBaseUrl())
                 .defaultHeader("accept", "application/json")
                 .build();
     }
 
     @Bean
-    public RestClient weatherClient() {
-        return RestClient.builder()
+    public RestClient weatherClient(RestClient.Builder builder) {
+        return builder
                 .baseUrl(weatherForecastProperties.getBaseUrl())
                 .build();
     }

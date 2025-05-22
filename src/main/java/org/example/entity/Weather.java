@@ -1,11 +1,21 @@
 package org.example.entity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import jakarta.persistence.*;
+import lombok.*;
 
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
+@Table(name = "weather")
 public class Weather {
+
+    @Id
+    @Column(name = "id_schedule")
+    private Long scheduleId;
 
     //actual temperature
     private double temperature;
@@ -22,94 +32,13 @@ public class Weather {
     //in km
     private int visibility;
 
-    private String description;
+    @OneToOne
+    @JoinColumn(name = "id_schedule")
+    @MapsId
+    private Schedule schedule;
 
-    //all wind charachteristics
-    private Wind wind;
-
-    //all precipation charachteristics
-    private Precipitation precipation;
-
-    String[] desEnums = {"ясно", "облачно", "переменная облачность", "облачно с прояснениями"};
-    List<String> descriptionEnums = new ArrayList<>(Arrays.asList(desEnums));
-
-    //Getters
-    public double getTemperature() {
-        return temperature;
-    }
-
-    public double getHumidity() {
-        return humidity;
-    }
-
-    public int getPressure() {
-        return pressure;
-    }
-
-    public int getUvIndex() {
-        return uvIndex;
-    }
-
-    public int getVisibility() {
-        return visibility;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Wind getWind() {
-        return wind;
-    }
-
-    public Precipitation getPrecipation() {
-        return precipation;
-    }
-
-
-    //Constructors
-    public Weather(){}
-
-    public Weather(double temperature, double humidity, int pressure, int uvIndex,
-                   int visibility, String description, Wind wind,
-                   Precipitation precipation) {
-        this.temperature = temperature;
-        this.humidity = humidity;
-        this.pressure = pressure;
-        this.uvIndex = uvIndex;
-        this.visibility = visibility;
-        this.description = description;
-        this.wind = wind;
-        this.precipation = precipation;
-    }
-
-    public Weather(Random rand){
-
-        this.temperature = rand.nextDouble(-100, 100);
-        this.humidity = rand.nextDouble(0, 1);
-        this.pressure = rand.nextInt(90, 105);
-        this.uvIndex = rand.nextInt(0, 11);
-        this.visibility = rand.nextInt(0, 45);
-        this.description = descriptionEnums.get(rand.nextInt(descriptionEnums.size()));
-        this.wind = new Wind(rand);
-        this.precipation = new Precipitation(rand);
-    }
-
-    //Methods
-    @Override
-    public String toString() {
-        return String.format(
-                "Фактическая температуа, С: %.1f" +
-                "\nВлажность, %%: %.0f" +
-                "\nДавление, кПа: %d" +
-                "\nУФ индекс: %d" +
-                "\nВидимость, км: %d" +
-                "\nПогодные условия: %s" +
-                "\nВетер:\n%s" +
-                "\nОсадки:\n%s",
-                temperature, humidity * 100,
-                pressure, uvIndex, visibility,
-                description, wind.toString(), precipation.toString());
-    }
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_weather_desc")
+    private WeatherDescription weatherDescription;
 
 }

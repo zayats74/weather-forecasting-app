@@ -19,6 +19,10 @@ public class CityServiceImpl implements CityService {
     private final RestClient restClient;
     private final CityCoordinatesProperties cityCoordinatesProperties;
 
+    public static final String CYRILLIC = "^[А-Яа-яЁё]+(?:[-\\s][А-Яа-яЁё]+)*$";
+    public static final String URI_CITY_COORDINATES = "/v1?apikey={apikey}&geocode={city}&format=json";
+
+
     public CityServiceImpl(CityRepository cityRepository, @Qualifier("сityClient") RestClient restClient, CityCoordinatesProperties cityCoordinatesProperties) {
         this.cityRepository = cityRepository;
         this.restClient = restClient;
@@ -26,7 +30,7 @@ public class CityServiceImpl implements CityService {
     }
 
     private boolean isCyrillic(String str){
-        return str.matches("[а-яА-Я]+");
+        return str.matches(CYRILLIC);
     }
 
     @Override
@@ -35,7 +39,7 @@ public class CityServiceImpl implements CityService {
             throw new NonCyrillicCharactersException("Название города должно быть введено кириллицей.");
         } else if ('А' > city.charAt(0) || city.charAt(0) > 'Я') {
             throw new InvalidCityFormatException("Название города должно начинаться с заглавной буквы");
-        } else if (!cityRepository.containsCity(city)) {
+        } else if (!cityRepository.existsByCity(city)) {
             throw new InvalidCityNameException("Города с таким названием в России не существует.");
         }
         return true;
@@ -44,7 +48,7 @@ public class CityServiceImpl implements CityService {
     public String getCityCoordinates(String city) {
         CityResponseDTO response = restClient
                 .get()
-                .uri("/v1?apikey={apikey}&geocode={city}&format=json", cityCoordinatesProperties.getApiKey(), city)
+                .uri(URI_CITY_COORDINATES, cityCoordinatesProperties.getApiKey(), city)
                 .retrieve()
                 .body(CityResponseDTO.class);
         double[] coordinates = response.getCoordinates();
