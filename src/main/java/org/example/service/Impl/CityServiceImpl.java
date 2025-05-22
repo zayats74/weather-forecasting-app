@@ -19,6 +19,10 @@ public class CityServiceImpl implements CityService {
     private final RestClient restClient;
     private final CityCoordinatesProperties cityCoordinatesProperties;
 
+    public static final String CYRILLIC = "^[А-Яа-яЁё]+(?:[-\\s][А-Яа-яЁё]+)*$";
+    public static final String URI_CITY_COORDINATES = "/v1?apikey={apikey}&geocode={city}&format=json";
+
+
     public CityServiceImpl(CityRepository cityRepository, @Qualifier("сityClient") RestClient restClient, CityCoordinatesProperties cityCoordinatesProperties) {
         this.cityRepository = cityRepository;
         this.restClient = restClient;
@@ -26,7 +30,7 @@ public class CityServiceImpl implements CityService {
     }
 
     private boolean isCyrillic(String str){
-        return str.matches("^[А-Яа-яЁё]+(?:[-\\s][А-Яа-яЁё]+)*$");
+        return str.matches(CYRILLIC);
     }
 
     @Override
@@ -44,7 +48,7 @@ public class CityServiceImpl implements CityService {
     public String getCityCoordinates(String city) {
         CityResponseDTO response = restClient
                 .get()
-                .uri("/v1?apikey={apikey}&geocode={city}&format=json", cityCoordinatesProperties.getApiKey(), city)
+                .uri(URI_CITY_COORDINATES, cityCoordinatesProperties.getApiKey(), city)
                 .retrieve()
                 .body(CityResponseDTO.class);
         double[] coordinates = response.getCoordinates();

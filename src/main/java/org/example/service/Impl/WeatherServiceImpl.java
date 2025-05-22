@@ -34,6 +34,10 @@ public class WeatherServiceImpl implements WeatherService {
     private final CityService cityService;
     private final WindDescriptionRepository windDescriptionRepository;
 
+    public static final String URI_DAY_FORECAST = "/api/weather/?lat={lat}&lon={lon}&date={date}&token={token}";
+    public static final String URI_DAYS_FORECAST = "/api/weather/?lat={lat}&lon={lon}&date={dateStart},{dateEnd}&token={token}";
+    public static final String COORDINATES_SEPARATOR = ", ";
+
     public WeatherServiceImpl(WeatherRepository weatherRepository, ScheduleRepository scheduleRepository, WindRepository windRepository, CityRepository cityRepository, WeatherDescriptionRepository weatherDescriptionRepository, WeatherMapper weatherMapper, WindMapper windMapper,
                               RestClient weatherClient, WeatherForecastProperties weatherForecastProperties, CityService cityService, WindDescriptionRepository windDescriptionRepository) {
         this.weatherRepository = weatherRepository;
@@ -52,14 +56,7 @@ public class WeatherServiceImpl implements WeatherService {
     private List<WeatherResponseDTO> processAndSaveForecasts(City city, LocalDate date,
                                                              List<WeatherApiResponseDTO> responses) {
         return responses.stream()
-                .map(response -> {
-                    Schedule schedule = createSchedule(city, date, response.getDate().toLocalTime());
-                    Weather weather = createWeather(response, schedule);
-                    Wind wind = createWind(response, schedule);
-                    WeatherResponseDTO res = weatherMapper.mapToResponseDTO(weather, wind);
-                    res.setDate(date);
-                    return res;
-                })
+                .map(response -> processForecast(response, city, date))
                 .toList();
     }
 
@@ -72,7 +69,7 @@ public class WeatherServiceImpl implements WeatherService {
             String[] coordinates = cityService.getCityCoordinates(city).split(", ");
             List <WeatherApiResponseDTO> responseApi =  weatherClient
                     .get()
-                    .uri("/api/weather/?lat={lat}&lon={lon}&date={date}&token={token}",
+                    .uri(URI_DAY_FORECAST,
                             coordinates[0], coordinates[1], date, weatherForecastProperties.getToken())
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<WeatherApiResponseDTO>>() {});
@@ -93,27 +90,17 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public List<WeatherResponseDTO> getWeatherForecastOnDates(String city, LocalDate dateStart, LocalDate dateEnd) {
-        String[] coordinates = cityService.getCityCoordinates(city).split(", ");
+        String[] coordinates = cityService.getCityCoordinates(city).split(COORDINATES_SEPARATOR);
         List<WeatherApiResponseDTO> responseApi =  weatherClient
                 .get()
-                .uri("/api/weather/?lat={lat}&lon={lon}&date={dateStart},{dateEnd}&token={token}",
+                .uri(URI_DAYS_FORECAST,
                         coordinates[0], coordinates[1], dateStart, dateEnd, weatherForecastProperties.getToken())
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<WeatherApiResponseDTO>>() {});
 
         return responseApi.stream()
-                .map(response -> {
-                    LocalDate responseDate = response.getDate().toLocalDate();
-                    LocalTime responseTime = response.getDate().toLocalTime();
-
-                    Schedule schedule = createSchedule(cityRepository.findByCity(city), responseDate, responseTime);
-
-                    Weather weather = createWeather(response, schedule);
-                    Wind wind = createWind(response, schedule);
-                    WeatherResponseDTO result = weatherMapper.mapToResponseDTO(weather, wind);
-                    result.setDate(responseDate);
-                    return result;
-                })
+                .map(response ->
+                        mapWeatherApiResponseToDTO(response, city))
                 .toList();
     }
 
@@ -150,7 +137,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .city(city)
                 .date(date)
                 .time(time)
-                .created_at(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
         return scheduleRepository.save(schedule);
     }
@@ -176,5 +163,27 @@ public class WeatherServiceImpl implements WeatherService {
     private double normalizeDegrees(double degrees) {
         degrees = degrees % 360;
         return degrees < 0 ? degrees + 360 : degrees;
+    }
+
+    private WeatherResponseDTO processForecast(WeatherApiResponseDTO response, City city, LocalDate date) {
+        Schedule schedule = createSchedule(city, date, response.getDate().toLocalTime());
+        Weather weather = createWeather(response, schedule);
+        Wind wind = createWind(response, schedule);
+        WeatherResponseDTO res = weatherMapper.mapToResponseDTO(weather, wind);
+        res.setDate(date);
+        return res;
+    }
+
+    private WeatherResponseDTO mapWeatherApiResponseToDTO(WeatherApiResponseDTO response, String city) {
+        LocalDate responseDate = response.getDate().toLocalDate();
+        LocalTime responseTime = response.getDate().toLocalTime();
+
+        Schedule schedule = createSchedule(cityRepository.findByCity(city), responseDate, responseTime);
+
+        Weather weather = createWeather(response, schedule);
+        Wind wind = createWind(response, schedule);
+        WeatherResponseDTO result = weatherMapper.mapToResponseDTO(weather, wind);
+        result.setDate(responseDate);
+        return result;
     }
 }
