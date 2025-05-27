@@ -8,6 +8,8 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+  cache:
+    type: caffeine
 
 weather-forecast:
     baseUrl: https://projecteol.ru

@@ -8,7 +8,9 @@ import org.example.mapper.WeatherMapper;
 import org.example.mapper.WindMapper;
 import org.example.repository.*;
 import org.example.service.CityService;
+import org.example.service.WeatherDescriptionService;
 import org.example.service.WeatherService;
+import org.example.service.WindDescriptionService;
 import org.example.utils.DateUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -26,31 +28,31 @@ public class WeatherServiceImpl implements WeatherService {
     private final ScheduleRepository scheduleRepository;
     private final WindRepository windRepository;
     private final CityRepository cityRepository;
-    private final WeatherDescriptionRepository weatherDescriptionRepository;
+    private final WeatherDescriptionService weatherDescriptionService;
     private final WeatherMapper weatherMapper;
     private final WindMapper windMapper;
     private final RestClient weatherClient;
     private final WeatherForecastProperties weatherForecastProperties;
     private final CityService cityService;
-    private final WindDescriptionRepository windDescriptionRepository;
+    private final WindDescriptionService windDescriptionService;
 
     public static final String URI_DAY_FORECAST = "/api/weather/?lat={lat}&lon={lon}&date={date}&token={token}";
     public static final String URI_DAYS_FORECAST = "/api/weather/?lat={lat}&lon={lon}&date={dateStart},{dateEnd}&token={token}";
     public static final String COORDINATES_SEPARATOR = ", ";
 
-    public WeatherServiceImpl(WeatherRepository weatherRepository, ScheduleRepository scheduleRepository, WindRepository windRepository, CityRepository cityRepository, WeatherDescriptionRepository weatherDescriptionRepository, WeatherMapper weatherMapper, WindMapper windMapper,
-                              RestClient weatherClient, WeatherForecastProperties weatherForecastProperties, CityService cityService, WindDescriptionRepository windDescriptionRepository) {
+    public WeatherServiceImpl(WeatherRepository weatherRepository, ScheduleRepository scheduleRepository, WindRepository windRepository, CityRepository cityRepository, WeatherDescriptionService weatherDescriptionService, WeatherMapper weatherMapper, WindMapper windMapper,
+                              RestClient weatherClient, WeatherForecastProperties weatherForecastProperties, CityService cityService, WindDescriptionService windDescriptionService) {
         this.weatherRepository = weatherRepository;
         this.scheduleRepository = scheduleRepository;
         this.windRepository = windRepository;
         this.cityRepository = cityRepository;
-        this.weatherDescriptionRepository = weatherDescriptionRepository;
+        this.weatherDescriptionService = weatherDescriptionService;
         this.weatherMapper = weatherMapper;
         this.windMapper = windMapper;
         this.weatherClient = weatherClient;
         this.weatherForecastProperties = weatherForecastProperties;
         this.cityService = cityService;
-        this.windDescriptionRepository = windDescriptionRepository;
+        this.windDescriptionService = windDescriptionService;
     }
 
     private List<WeatherResponseDTO> processAndSaveForecasts(City city, LocalDate date,
@@ -143,8 +145,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     private Weather createWeather(WeatherApiResponseDTO weatherApiResponseDTO, Schedule schedule) {
-        WeatherDescription weatherDesc = weatherDescriptionRepository.findByCloudCover(
-                weatherApiResponseDTO.getAtmosphereClouds());
+        WeatherDescription weatherDesc = getWeatherDescription(weatherApiResponseDTO.getAtmosphereClouds());
         Weather weather = weatherMapper.mapToWeather(weatherApiResponseDTO);
         weather.setSchedule(schedule);
         weather.setWeatherDescription(weatherDesc);
@@ -152,17 +153,21 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     private Wind createWind(WeatherApiResponseDTO weatherApiResponseDTO, Schedule schedule) {
-        WindDescription windDesc = windDescriptionRepository.findByDegree(
-                normalizeDegrees(weatherApiResponseDTO.getWindDirection()));
+        WindDescription windDesc = getWindDescription(weatherApiResponseDTO.getWindDirection());
         Wind wind = windMapper.mapToWind(weatherApiResponseDTO);
         wind.setSchedule(schedule);
         wind.setWindDescription(windDesc);
         return windRepository.save(wind);
     }
 
-    private double normalizeDegrees(double degrees) {
-        degrees = degrees % 360;
-        return degrees < 0 ? degrees + 360 : degrees;
+    private WeatherDescription getWeatherDescription(double cloudCover) {
+        return weatherDescriptionService.findByCloudCover(cloudCover)
+                .orElseThrow(() -> new RuntimeException("WindDescription not found"));
+    }
+
+    private WindDescription getWindDescription(double degrees) {
+        return windDescriptionService.findByDegree(degrees)
+                .orElseThrow(() -> new RuntimeException("WindDescription not found"));
     }
 
     private WeatherResponseDTO processForecast(WeatherApiResponseDTO response, City city, LocalDate date) {
