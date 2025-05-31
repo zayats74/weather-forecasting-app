@@ -29,7 +29,7 @@ public class CacheConfig {
     public CacheManager inMemoryCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("windDescription", "weatherDescription");
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.DAYS)
+                .expireAfterWrite(12, TimeUnit.HOURS)
                 .maximumSize(1000)
                 .recordStats());
         return cacheManager;
@@ -48,7 +48,7 @@ public class CacheConfig {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
-                .entryTtl(Duration.ofMinutes(1));
+                .entryTtl(Duration.ofHours(12));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
