@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.Impl;
 
 import org.example.entity.WeatherDescription;
 import org.example.repository.WeatherDescriptionRepository;
@@ -19,7 +19,7 @@ public class WeatherDescriptionService {
         this.weatherDescriptionRepository = weatherDescriptionRepository;
     }
 
-    @Cacheable(CACHE_NAME)
+    @Cacheable(value = CACHE_NAME, cacheManager = "inMemoryCacheManager")
     public List<WeatherDescription> getAllWeatherDescriptions() {
         return weatherDescriptionRepository.findAllByOrderByMinCloudCoverAsc();
     }
@@ -31,6 +31,6 @@ public class WeatherDescriptionService {
     }
 
     private boolean isInRange(double degree, double startDegree, double endDegree){
-        return degree >= startDegree && degree < endDegree;
+        return degree >= startDegree && degree <= endDegree;
     }
 }

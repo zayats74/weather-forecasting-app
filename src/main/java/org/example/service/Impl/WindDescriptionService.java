@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.Impl;
 
 import org.example.entity.WindDescription;
 import org.example.repository.WindDescriptionRepository;
@@ -20,7 +20,7 @@ public class WindDescriptionService {
         this.windDescriptionRepository = windDescriptionRepository;
     }
 
-    @Cacheable(CACHE_NAME)
+    @Cacheable(value = CACHE_NAME, cacheManager = "inMemoryCacheManager")
     public List<WindDescription> getAllWindDescriptions() {
         return windDescriptionRepository.findAllByOrderByDegreeStartAsc();
     }
@@ -33,7 +33,10 @@ public class WindDescriptionService {
     }
 
     private boolean isInRange(double degree, double startDegree, double endDegree){
-        return degree >= startDegree && degree < endDegree;
+        if (startDegree > endDegree) {
+            return degree >= startDegree || degree <= endDegree;
+        }
+        return degree >= startDegree && degree <= endDegree;
     }
 
     private double normalizeDegrees(double degrees) {
