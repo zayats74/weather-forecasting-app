@@ -6,8 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface WeatherService {
-    List<WeatherResponseDTO> getWeatherForecastOnAllHours(String city, LocalDate date);
-    List<WeatherResponseDTO> getWeatherForecastOnDates(String city, LocalDate dateStart, LocalDate dateEnd);
+    List<WeatherResponseDTO> getWeatherForecastOnDay(String city, LocalDate date);
     List<WeatherResponseDTO> getWeatherForecastOnToday(String city);
     List<WeatherResponseDTO> getWeatherForecastOnTomorrow(String city);
     List<WeatherResponseDTO> getWeatherForecastOnTenDays(String city);

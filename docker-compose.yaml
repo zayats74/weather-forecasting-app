@@ -36,8 +36,19 @@ services:
       - '8080:8080'
     depends_on:
       - flyway-migration
+      - cache
     networks:
       - net
+  cache:
+      container_name: cache-container
+      image: redis:alpine
+      ports:
+        - "6379:6379"
+      environment:
+        SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+      networks:
+        - net
+
 networks:
   net:
     driver: bridge

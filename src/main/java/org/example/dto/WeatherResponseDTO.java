@@ -1,6 +1,8 @@
 package org.example.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.example.entity.WeatherDescription;
 import org.example.entity.Wind;
 
 import java.time.LocalDate;
@@ -10,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeatherResponseDTO {
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     private double temperature;
@@ -23,8 +25,13 @@ public class WeatherResponseDTO {
 
     private int visibility;
 
-    private String description;
+    private WeatherDescription description;
 
     private Wind wind;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    public LocalDate getDate() {
+        return date;
+    }
 
 }

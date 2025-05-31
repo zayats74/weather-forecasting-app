@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
@@ -17,4 +19,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     @Query("SELECT s FROM Schedule s WHERE s.city = :city AND s.date = :date")
     List<Schedule> findByCityAndDate(@Param("city") City city, @Param("date") LocalDate date);
 
+    List<Schedule> findByCityAndDateBetween(City city, LocalDate dateStart, LocalDate dateEnd);
+
+    Optional<Schedule> findByCityAndDateAndTime(City cityEntity, LocalDate date, LocalTime responseTime);
 }
