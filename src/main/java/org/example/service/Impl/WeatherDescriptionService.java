@@ -3,7 +3,6 @@ package org.example.service.Impl;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.WeatherDescription;
-import org.example.entity.WindDescription;
 import org.example.repository.WeatherDescriptionRepository;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -22,6 +21,8 @@ public class WeatherDescriptionService {
 
     public static final String CACHE_NAME = "weatherDescription";
     public static final String CACHE_KEY = "all";
+    public static final Double EPSILON = 0.0001;
+
 
     @PostConstruct
     public void initialization(){
@@ -43,7 +44,7 @@ public class WeatherDescriptionService {
                 .findFirst();
     }
 
-    private boolean isInRange(double degree, double startDegree, double endDegree){
-        return degree >= startDegree && degree <= endDegree;
+    public boolean isInRange(double degree, double minCloudCover, double maxCloudCover){
+        return degree >= minCloudCover - EPSILON && degree <= maxCloudCover + EPSILON;
     }
 }

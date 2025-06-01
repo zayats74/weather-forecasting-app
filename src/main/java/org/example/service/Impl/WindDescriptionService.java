@@ -21,6 +21,7 @@ public class WindDescriptionService {
 
     public static final String CACHE_NAME = "windDescription";
     public static final String CACHE_KEY = "all";
+    public static final Double EPSILON = 0.0001;
 
     @PostConstruct
     public void initialization(){
@@ -44,14 +45,14 @@ public class WindDescriptionService {
                 .findFirst();
     }
 
-    private boolean isInRange(double degree, double startDegree, double endDegree){
+    public boolean isInRange(double degree, double startDegree, double endDegree){
         if (startDegree > endDegree) {
-            return degree >= startDegree || degree <= endDegree;
+            return degree >= startDegree - EPSILON || degree <= endDegree + EPSILON;
         }
-        return degree >= startDegree && degree <= endDegree;
+        return degree >= startDegree - EPSILON && degree <= endDegree + EPSILON;
     }
 
-    private double normalizeDegrees(double degrees) {
+    public double normalizeDegrees(double degrees) {
         return (degrees % 360 + 360) % 360;
     }
 }
