@@ -4,7 +4,7 @@ import org.example.exception.cityException.InvalidCityFormatException;
 import org.example.exception.cityException.InvalidCityNameException;
 import org.example.exception.cityException.NonCyrillicCharactersException;
 import org.example.exception.dateException.*;
-import org.example.service.Impl.CityServiceImpl;
+import org.example.service.city.Impl.CityServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

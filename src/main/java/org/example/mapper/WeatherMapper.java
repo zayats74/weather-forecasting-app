@@ -12,8 +12,8 @@ public interface WeatherMapper {
 
     @Mapping(target = "scheduleId", ignore = true)
     @Mapping(target = "schedule", ignore = true)
-    @Mapping(target = "weatherDescription", ignore = true)
     Weather mapToWeather(WeatherApiResponseDTO weatherApiResponseDTO);
 
+    @Mapping(source = "weather.weatherDescription", target = "description")
     WeatherResponseDTO mapToResponseDTO(Weather weather, Wind wind);
 }
