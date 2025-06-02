@@ -1,12 +1,13 @@
-package org.example.service.Impl;
+package org.example.service.cityServices.Impl;
 
 import org.example.config.CityCoordinatesProperties;
 import org.example.dto.CityResponseDTO;
+import org.example.entity.City;
 import org.example.exception.cityException.InvalidCityFormatException;
 import org.example.exception.cityException.InvalidCityNameException;
 import org.example.exception.cityException.NonCyrillicCharactersException;
 import org.example.repository.CityRepository;
-import org.example.service.CityService;
+import org.example.service.cityServices.CityService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -53,6 +54,11 @@ public class CityServiceImpl implements CityService {
                 .body(CityResponseDTO.class);
         double[] coordinates = response.getCoordinates();
         return coordinates[0] + ", " + coordinates[1];
+    }
+
+    @Override
+    public City getCityByName(String city){
+        return cityRepository.findByCity(city);
     }
 
 }

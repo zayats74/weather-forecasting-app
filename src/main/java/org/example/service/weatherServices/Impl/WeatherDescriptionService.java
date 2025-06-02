@@ -1,4 +1,4 @@
-package org.example.service.Impl;
+package org.example.service.weatherServices.Impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +32,9 @@ public class WeatherDescriptionService {
         }
     }
 
-    @Cacheable(value = CACHE_NAME, key = CACHE_KEY, cacheManager = "inMemoryCacheManager")
+    @Cacheable(value = CACHE_NAME, key = "'" + CACHE_KEY + "'", cacheManager = "inMemoryCacheManager")
     public List<WeatherDescription> getAllWeatherDescriptions() {
         return weatherDescriptionRepository.findAllByOrderByMinCloudCoverAsc();
-    }
-
-    public Optional<WeatherDescription> findByCloudCover(double cloudCover) {
-        return getAllWeatherDescriptions().stream()
-                .filter(d -> isInRange(cloudCover, d.getMinCloudCover(), d.getMaxCloudCover()))
-                .findFirst();
     }
 
     public boolean isInRange(double degree, double minCloudCover, double maxCloudCover){

@@ -1,4 +1,4 @@
-package org.example.service.Impl;
+package org.example.service.windServices.Impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +32,9 @@ public class WindDescriptionService {
     }
 
 
-    @Cacheable(value = CACHE_NAME, key = CACHE_KEY, cacheManager = "inMemoryCacheManager")
+    @Cacheable(value = CACHE_NAME, key = "'" + CACHE_KEY + "'", cacheManager = "inMemoryCacheManager")
     public List<WindDescription> getAllWindDescriptions() {
         return windDescriptionRepository.findAllByOrderByDegreeStartAsc();
-    }
-
-    public Optional<WindDescription> findByDegree(double degrees) {
-        final double normalized = normalizeDegrees(degrees);
-        return getAllWindDescriptions().stream()
-                .filter(d -> isInRange(normalized, d.getDegreeStart(), d.getDegreeEnd()))
-                .findFirst();
     }
 
     public boolean isInRange(double degree, double startDegree, double endDegree){

@@ -4,7 +4,7 @@ import org.example.exception.cityException.InvalidCityFormatException;
 import org.example.exception.cityException.InvalidCityNameException;
 import org.example.exception.cityException.NonCyrillicCharactersException;
 import org.example.repository.CityRepository;
-import org.example.service.Impl.CityServiceImpl;
+import org.example.service.cityServices.Impl.CityServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

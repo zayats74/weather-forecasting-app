@@ -2,7 +2,7 @@ package org.example.service;
 
 import org.example.entity.WeatherDescription;
 import org.example.repository.WeatherDescriptionRepository;
-import org.example.service.Impl.WeatherDescriptionService;
+import org.example.service.weatherServices.Impl.WeatherDescriptionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +12,6 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -50,38 +49,6 @@ public class WeatherDescriptionServiceTest {
         verify(cache).put(WeatherDescriptionService.CACHE_KEY, allDescriptions);
     }
 
-
-    @Test
-    void findByCloudCover_ShouldReturnCorrectDescription() {
-        when(weatherDescriptionRepository.findAllByOrderByMinCloudCoverAsc()).thenReturn(allDescriptions);
-
-        assertEquals(Optional.of(w1), weatherDescriptionService.findByCloudCover(0.0));
-        assertEquals(Optional.of(w1), weatherDescriptionService.findByCloudCover(10.0));
-        assertEquals(Optional.of(w1), weatherDescriptionService.findByCloudCover(20.0));
-
-        assertEquals(Optional.of(w2), weatherDescriptionService.findByCloudCover(20.001));
-        assertEquals(Optional.of(w2), weatherDescriptionService.findByCloudCover(35.0));
-        assertEquals(Optional.of(w2), weatherDescriptionService.findByCloudCover(50.0));
-
-        assertEquals(Optional.of(w3), weatherDescriptionService.findByCloudCover(50.001));
-        assertEquals(Optional.of(w3), weatherDescriptionService.findByCloudCover(60.0));
-        assertEquals(Optional.of(w3), weatherDescriptionService.findByCloudCover(70.0));
-
-        assertEquals(Optional.of(w4), weatherDescriptionService.findByCloudCover(70.001));
-        assertEquals(Optional.of(w4), weatherDescriptionService.findByCloudCover(75.0));
-        assertEquals(Optional.of(w4), weatherDescriptionService.findByCloudCover(80.0));
-
-        assertEquals(Optional.of(w5), weatherDescriptionService.findByCloudCover(80.001));
-        assertEquals(Optional.of(w5), weatherDescriptionService.findByCloudCover(85.0));
-        assertEquals(Optional.of(w5), weatherDescriptionService.findByCloudCover(90.0));
-
-        assertEquals(Optional.of(w6), weatherDescriptionService.findByCloudCover(90.001));
-        assertEquals(Optional.of(w6), weatherDescriptionService.findByCloudCover(95.0));
-        assertEquals(Optional.of(w6), weatherDescriptionService.findByCloudCover(100.0));
-
-        assertTrue(weatherDescriptionService.findByCloudCover(-0.1).isEmpty());
-        assertTrue(weatherDescriptionService.findByCloudCover(100.1).isEmpty());
-    }
 
     @Test
     void isInRange_ShouldCorrectlyCheckBoundaries() {
