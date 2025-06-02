@@ -1,4 +1,4 @@
-package org.example.service.weatherServices;
+package org.example.service.weather;
 
 import org.example.dto.WeatherResponseDTO;
 

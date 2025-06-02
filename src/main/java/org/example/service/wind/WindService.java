@@ -1,4 +1,4 @@
-package org.example.service.windServices;
+package org.example.service.wind;
 
 import org.example.dto.WeatherApiResponseDTO;
 import org.example.entity.Schedule;

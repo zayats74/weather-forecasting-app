@@ -1,4 +1,4 @@
-package org.example.service.windServices.Impl;
+package org.example.service.wind.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.WeatherApiResponseDTO;
@@ -7,7 +7,7 @@ import org.example.entity.Wind;
 import org.example.entity.WindDescription;
 import org.example.mapper.WindMapper;
 import org.example.repository.WindRepository;
-import org.example.service.windServices.WindService;
+import org.example.service.wind.WindService;
 import org.springframework.stereotype.Service;
 
 @Service

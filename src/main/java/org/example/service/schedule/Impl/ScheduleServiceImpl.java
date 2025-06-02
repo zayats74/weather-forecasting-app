@@ -1,11 +1,11 @@
-package org.example.service.scheduleServices.Impl;
+package org.example.service.schedule.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.entity.City;
 import org.example.entity.Schedule;
 import org.example.repository.ScheduleRepository;
-import org.example.service.cityServices.CityService;
-import org.example.service.scheduleServices.ScheduleService;
+import org.example.service.city.CityService;
+import org.example.service.schedule.ScheduleService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

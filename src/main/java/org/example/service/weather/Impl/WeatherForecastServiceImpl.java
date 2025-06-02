@@ -1,8 +1,8 @@
-package org.example.service.weatherServices.Impl;
+package org.example.service.weather.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.WeatherResponseDTO;
-import org.example.service.weatherServices.WeatherForecastService;
+import org.example.service.weather.WeatherForecastService;
 import org.example.utils.DateUtils;
 import org.springframework.stereotype.Service;
 

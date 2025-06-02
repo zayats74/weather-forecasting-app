@@ -2,7 +2,7 @@ package org.example.service;
 
 import org.example.entity.WeatherDescription;
 import org.example.repository.WeatherDescriptionRepository;
-import org.example.service.weatherServices.Impl.WeatherDescriptionService;
+import org.example.service.weather.Impl.WeatherDescriptionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package org.example.service.weatherServices.Impl;
+package org.example.service.weather.Impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

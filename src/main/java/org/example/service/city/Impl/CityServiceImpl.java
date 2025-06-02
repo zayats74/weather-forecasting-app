@@ -1,4 +1,4 @@
-package org.example.service.cityServices.Impl;
+package org.example.service.city.Impl;
 
 import org.example.config.CityCoordinatesProperties;
 import org.example.dto.CityResponseDTO;
@@ -7,7 +7,7 @@ import org.example.exception.cityException.InvalidCityFormatException;
 import org.example.exception.cityException.InvalidCityNameException;
 import org.example.exception.cityException.NonCyrillicCharactersException;
 import org.example.repository.CityRepository;
-import org.example.service.cityServices.CityService;
+import org.example.service.city.CityService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;

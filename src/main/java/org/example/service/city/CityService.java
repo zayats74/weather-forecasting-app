@@ -1,4 +1,4 @@
-package org.example.service.cityServices;
+package org.example.service.city;
 
 import org.example.entity.City;
 

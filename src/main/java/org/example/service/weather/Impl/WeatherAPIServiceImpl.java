@@ -1,10 +1,10 @@
-package org.example.service.weatherServices.Impl;
+package org.example.service.weather.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.config.WeatherForecastProperties;
 import org.example.dto.WeatherApiResponseDTO;
-import org.example.service.cityServices.CityService;
-import org.example.service.weatherServices.WeatherAPIService;
+import org.example.service.city.CityService;
+import org.example.service.weather.WeatherAPIService;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;

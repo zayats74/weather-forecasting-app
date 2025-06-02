@@ -1,4 +1,4 @@
-package org.example.service.weatherServices.Impl;
+package org.example.service.weather.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.WeatherApiResponseDTO;
@@ -6,9 +6,9 @@ import org.example.dto.WeatherResponseDTO;
 import org.example.entity.*;
 import org.example.mapper.WeatherMapper;
 import org.example.repository.WeatherRepository;
-import org.example.service.scheduleServices.ScheduleService;
-import org.example.service.weatherServices.WeatherAPIService;
-import org.example.service.windServices.WindService;
+import org.example.service.schedule.ScheduleService;
+import org.example.service.weather.WeatherAPIService;
+import org.example.service.wind.WindService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package org.example.service;
 
 import org.example.entity.WindDescription;
 import org.example.repository.WindDescriptionRepository;
-import org.example.service.windServices.Impl.WindDescriptionService;
+import org.example.service.wind.Impl.WindDescriptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

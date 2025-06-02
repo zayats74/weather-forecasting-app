@@ -1,4 +1,4 @@
-package org.example.service.windServices.Impl;
+package org.example.service.wind.Impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

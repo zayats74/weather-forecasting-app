@@ -1,4 +1,4 @@
-package org.example.service.scheduleServices;
+package org.example.service.schedule;
 
 import org.example.entity.Schedule;
 
