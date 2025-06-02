@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -113,12 +114,8 @@ public class WeatherService {
     }
 
     private boolean isFullForecast(String city, LocalDate dateStart, LocalDate dateEnd) {
-        for (LocalDate date = dateStart; !date.isAfter(dateEnd); date = date.plusDays(1)) {
-            if (scheduleService.getScheduleByDate(city, date).isEmpty()){
-                return false;
-            }
-        }
-        return true;
+        return Stream.iterate(dateStart, date -> !date.isAfter(dateEnd), date -> date.plusDays(1))
+                .allMatch(date -> !scheduleService.getScheduleByDate(city, date).isEmpty());
     }
 
     private boolean checkDay(String city, LocalDate date){
