@@ -1,8 +1,8 @@
 package org.example.dto.event;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public record WeatherRequestEvent (
         String city,
-        LocalTime requestTime
+        LocalDateTime requestTime
 ) {}

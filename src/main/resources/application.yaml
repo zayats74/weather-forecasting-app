@@ -15,7 +15,7 @@ spring:
       port: 6379
       host: cache
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: broker:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -23,7 +23,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "org.example.event"
+        spring.json.trusted.packages: "org.example.dto.event"
 
 weather-forecast:
     baseUrl: https://projecteol.ru

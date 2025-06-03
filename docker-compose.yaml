@@ -37,6 +37,7 @@ services:
     depends_on:
       - flyway-migration
       - cache
+      - broker
     networks:
       - net
   cache:
@@ -49,6 +50,7 @@ services:
       networks:
         - net
   broker:
+    container_name: broker
     image: redpandadata/redpanda:v23.3.13
     command:
       - redpanda
@@ -71,6 +73,8 @@ services:
     ports:
       - "9092:9092"
       - "9644:9644"
+    networks:
+      - net
   kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.2
     environment:
@@ -81,6 +85,8 @@ services:
       - broker
     ports:
       - "8084:8084"
+    networks:
+      - net
 
 networks:
   net:
